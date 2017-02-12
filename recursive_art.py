@@ -1,4 +1,6 @@
-""" TODO: Put your header comment here """
+"""
+author: Onur, the Incompetent
+"""
 
 import random
 from PIL import Image
@@ -34,8 +36,11 @@ def evaluate_random_function(f, x, y):
         0.02
     """
     # TODO: implement this
-    pass
-
+    # pass
+    if f == ['x']:
+        return x
+    elif f == ['y']:
+        return y
 
 def remap_interval(val,
                    input_interval_start,
@@ -65,7 +70,12 @@ def remap_interval(val,
         1.5
     """
     # TODO: implement this
-    pass
+    # pass
+    int1 = input_interval_end - input_interval_start
+    int2 = output_interval_end - output_interval_start
+    ratio = (val - input_interval_start) / int1
+    output = (ratio * int2) + output_interval_start
+    return output
 
 
 def color_map(val):
@@ -138,7 +148,9 @@ def generate_art(filename, x_size=350, y_size=350):
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
+    # doctest.testmod()
+    doctest.run_docstring_examples(remap_interval, globals(), verbose=True)
+
 
     # Create some computational art!
     # TODO: Un-comment the generate_art function call after you
@@ -147,4 +159,4 @@ if __name__ == '__main__':
 
     # Test that PIL is installed correctly
     # TODO: Comment or remove this function call after testing PIL install
-    test_image("noise.png")
+    # test_image("noise.png")
