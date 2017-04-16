@@ -2,12 +2,12 @@
 author: Onur, the Incompetent
 """
 
-import random
-import math
+from random import randint, choice
+from math import sin, cos, pi
 from PIL import Image
 
 
-def build_random_function(min_depth, max_depth):
+def build_random_function(min_depth, max_depth, frame_rate=.5):
     """ Builds a random function of depth at least min_depth and depth
         at most max_depth (see assignment writeup for definition of depth
         in this context)
@@ -20,12 +20,12 @@ def build_random_function(min_depth, max_depth):
     """
 
     if max_depth == 1:
-        return random.choice([['x'], ['y']])
+        return choice([['x'], ['y']])
     if min_depth == 1:
-        if random.randint(0, 1) == 0:
-            return random.choice([['x'], ['y']])
+        if randint(0, 1) == 0:
+            return choice([['x'], ['y']])
     funcs = ['prod', 'avg', 'cos_pi', 'sin_pi', 'x', 'y']
-    chosen = random.choice(funcs)
+    chosen = choice(funcs)
 
     if chosen == 'prod' or chosen == 'avg':
         fun_list = [chosen, build_random_function(min_depth-1, max_depth-1),
@@ -60,9 +60,9 @@ def evaluate_random_function(f, x, y):
     if f[0] == 'cubed':
         return evaluate_random_function(f[1], x, y)**3
     if f[0] == 'cos_pi':
-        return math.cos(math.pi * evaluate_random_function(f[1], x, y))
+        return cos(pi * evaluate_random_function(f[1], x, y))
     if f[0] == 'sin_pi':
-        return math.sin(math.pi * evaluate_random_function(f[1], x, y))
+        return sin(pi * evaluate_random_function(f[1], x, y))
     else:
         print('Does not work, sorry.')
         print(f[0])
@@ -136,9 +136,9 @@ def test_image(filename, x_size=350, y_size=350):
         for j in range(y_size):
             x = remap_interval(i, 0, x_size, -1, 1)
             y = remap_interval(j, 0, y_size, -1, 1)
-            pixels[i, j] = (random.randint(0, 255),  # Red channel
-                            random.randint(0, 255),  # Green channel
-                            random.randint(0, 255))  # Blue channel
+            pixels[i, j] = (randint(0, 255),  # Red channel
+                            randint(0, 255),  # Green channel
+                            randint(0, 255))  # Blue channel
 
     im.save(filename)
 
@@ -170,8 +170,44 @@ def generate_art(filename, x_size=350, y_size=350):
     im.save(filename)
 
 
+def get_an_uncontroversial_name():
+    """ Find a filename that doesn't to not overwrite existing art.
+
+        Do this in a roudabout way of finding all the current art files that
+        follow a convention of base_string + an_int + extension, finding the
+        largest an_int, and +1-ing that to get the returned filename.
+
+        The irony of this is that in the process of writing
+        and testing this function many arts were created and overwritten.
+
+         - Evan Lloyd New-Schmidt (@newsch)
+
+        returns: filename as a string
+    """
+    import glob
+    base_string = 'myart'  # prefix for filenames
+    extension = '.png'
+    files = glob.glob('myart*.png')  # get all files that match the pattern
+    # parse number out of filename and get biggest one
+    big_int = 1
+    for file in files:
+        int_begin = len(base_string)
+        int_end = file.find(extension)
+        new_int = file[int_begin:int_end]
+        # check to make sure this is really an int and if it's bigger or not
+        if new_int.isdigit():
+            new_int = int(new_int)
+            if new_int > big_int:
+                big_int = new_int
+
+    bigger_int = big_int + 1  # make a bigger int for the new filename
+    an_uncontroversial_filename = base_string + str(bigger_int) + extension
+    return(an_uncontroversial_filename)
+
 if __name__ == '__main__':
     # import doctest
     # doctest.testmod()
     # doctest.run_docstring_examples(remap_interval, globals(), verbose=True)
-    generate_art("myart10.png")
+    filename = get_an_uncontroversial_name()
+    generate_art(filename)
+    print('"art" saved to ' + filename)
